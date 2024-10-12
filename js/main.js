@@ -10,14 +10,28 @@ let messageElement = document.getElementById('message');
 
 // TODO: Initialize game variables
 let playerChoice;
+const NEW_SELECTION = 'NEW_SELECTION';
 
 // TODO: Add event listeners to choice buttons
 const choices = document.getElementsByClassName('choice');
-for (let i = 0; i < choices.length; i++) {
-  choices[i].addEventListener('click', (e) => {
-    playerChoice = e.target.attributes[1].value
-  });
-};
+
+document.addEventListener(NEW_SELECTION, () => {
+  for (let i = 0; i < choices.length; i++) {
+    choices[i].classList.remove('selected')
+  };
+})
+
+const initJankenpoButtons = () => {
+  for (let i = 0; i < choices.length; i++) {
+    choices[i].addEventListener('click', (e) => {
+      playerChoice = e.target.attributes[1].value
+  
+      document.dispatchEvent(new Event(NEW_SELECTION))
+      choices[i].classList.toggle('selected');
+    });
+  };
+}
+
 
 // Main game logic
 function game(playerChoice) {
@@ -37,6 +51,8 @@ const resetScore = () => {
 
   localStorage.setItem(STORAGE_KEY, defaultScore);
   loadDataFromLocalStorage();
+  document.dispatchEvent(new Event(NEW_SELECTION));
+
   if (messageElement.childNodes.length > 0) {
     const element = document.getElementById('message-result')
     element.remove();
@@ -57,4 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (isLocalStorageExist()) {
     loadDataFromLocalStorage();
   }
+
+  initJankenpoButtons();
 });
