@@ -1,3 +1,15 @@
+export const STORAGE_KEY = 'JANKENPO';
+
+export function isLocalStorageExist() {
+  if (typeof (Storage) === undefined) {
+    alert('Your browser does not support local storage');
+
+    return false;
+  }
+
+  return true;
+};
+
 export function updateScore(playerScore, computerScore) {
   // TODO: Implement score update logic
   let playerScoreElement = document.getElementById('player-score');
@@ -11,6 +23,15 @@ export function updateScore(playerScore, computerScore) {
 
   playerScoreElement.innerText = updatedPlayerScore;
   computerScoreElement.innerText = updatedComputerScore;
+
+  if (isLocalStorageExist()) {
+    const parsedResult = JSON.stringify({
+      playerScore: updatedPlayerScore,
+      computerScore: updatedComputerScore
+    });
+
+    localStorage.setItem(STORAGE_KEY, parsedResult);
+  }
 };
 
 export function updateMessage(result, playerChoice, computerChoice) {

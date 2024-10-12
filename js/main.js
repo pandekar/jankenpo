@@ -1,8 +1,10 @@
 import { getComputerChoice, playRound } from './game.js';
-import { updateScore, updateMessage } from './ui.js';
+import { updateScore, updateMessage, isLocalStorageExist, STORAGE_KEY } from './ui.js';
 
 // TODO: Select DOM elements
 const playerSubmitButton = document.getElementById('player-submit-button');
+let playerScoreElement = document.getElementById('player-score');
+let computerScoreElement = document.getElementById('computer-score');
 
 // TODO: Initialize game variables
 let playerChoice;
@@ -26,3 +28,16 @@ function game(playerChoice) {
 };
 
 playerSubmitButton.addEventListener('click', () => game(playerChoice));
+
+const loadDataFromLocalStorage = () => {
+  const localStorageResult = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  playerScoreElement.innerText = localStorageResult.playerScore;
+  computerScoreElement.innerText = localStorageResult.computerScore;
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (isLocalStorageExist()) {
+    loadDataFromLocalStorage();
+  }
+});
