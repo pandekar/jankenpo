@@ -49,15 +49,15 @@ export function updateMessage(result, playerChoice, computerChoice) {
   let message = '';
 
   if (result.playerScore === result.computerScore) {
-    message = 'it\'s a DRAW';
+    message = '| it\'s a DRAW';
   } else if (result.playerScore === 1) {
-    message = 'Player WINS'
+    message = '| Player WINS'
   } else {
-    message = 'Computer WINS'
+    message = '| Computer WINS'
   }
   
-  const playerIntro = document.createTextNode(`Player uses ${playerChoice.toUpperCase()}\n`);
-  const computerIntro = document.createTextNode(`Computer uses ${computerChoice.toUpperCase()}\n`);
+  const playerIntro = document.createTextNode(`Player uses ${playerChoice.toUpperCase()} |`);
+  const computerIntro = document.createTextNode(` Computer uses ${computerChoice.toUpperCase()}\n`);
   const resultIntro = document.createTextNode(message)
 
   let intro = document.createElement("p");
