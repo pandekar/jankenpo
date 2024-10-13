@@ -21,8 +21,10 @@ let gameRoundContainer = document.getElementById('game-round-container');
 let gameBoardContainer = document.getElementById('game-board-container');
 let playerStartButton = document.getElementById('player-start-button');
 let roundNumberSignElement = document.getElementById('round-number-sign');
+let playerContinueButton = document.getElementById('player-continue-button');
 
 playerStartButton.addEventListener('click', () => startGame());
+playerContinueButton.addEventListener('click', () => continueGame());
 playerSubmitButton.addEventListener('click', () => game(playerChoice));
 playerResetButton.addEventListener('click', () => resetScore());
 
@@ -53,6 +55,7 @@ function game(playerChoice) {
  */
 const resetScore = () => {
   const defaultScore = JSON.stringify({
+    bestOfRounds: 0,
     playerScore: 0,
     computerScore: 0
   });
@@ -100,7 +103,39 @@ const startGame = () => {
   gameRoundContainer.classList.toggle('hidden');
   gameBoardContainer.classList.toggle('hidden');
 
+  const staterStorage = {
+    bestOfRounds,
+    playerScore: 0,
+    computerScore: 0,
+  };
+  const parsedStarterDataStorage = JSON.stringify(staterStorage);
+
+  localStorage.setItem(STORAGE_KEY, parsedStarterDataStorage);
+
+  playerScoreElement.innerText = staterStorage.playerScore;
+  computerScoreElement.innerText = staterStorage.computerScore;
+
   saveRound();
+};
+
+const continueGame = () => {
+  const {
+    playerScore, computerScore, bestOfRounds: localBestOfRounds
+  } = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+  playerScoreElement.innerText = playerScore;
+  computerScoreElement.innerText = computerScore;
+
+  // Hide best of screen and show main game screen
+  gameRoundContainer.classList.toggle('hidden');
+  gameBoardContainer.classList.toggle('hidden');
+
+  // SAVE ROUND
+  let roundNumbers = document.createElement("p");
+  roundNumbers.setAttribute('id', 'round-numbers-text');
+  roundNumbers.appendChild(document.createTextNode(localBestOfRounds));
+
+  roundNumberSignElement.appendChild(roundNumbers)
 };
 
 /**
@@ -111,15 +146,28 @@ const loadDataFromLocalStorage = () => {
 
   playerScoreElement.innerText = localStorageResult.playerScore;
   computerScoreElement.innerText = localStorageResult.computerScore;
+
+  console.log(localStorageResult.bestOfRounds)
+  if (localStorageResult.bestOfRounds !== 0) {
+    playerContinueButton.disabled = false;
+  } else {
+    playerContinueButton.disabled = true;
+  }
 };
 
 /**
  * Initialize best of round selection buttons
  */
 const initRoundButtons = () => {
+  const localStorageResult = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
   for (let i = 0; i < choices.length; i++) {
     rounds[i].addEventListener('click', (e) => {
       bestOfRounds = parseInt(e.target.innerText);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        ...localStorageResult,
+        bestOfRounds
+      }))
 
       document.dispatchEvent(new Event(NEW_ROUND_SELECTION));
       rounds[i].classList.toggle('selected');
@@ -146,9 +194,9 @@ const initJankenpoButtons = () => {
  */
 document.addEventListener(CALCULATE_SCORE, () => {
   const localStorageResult = JSON.parse(localStorage.getItem(STORAGE_KEY));
-  const { playerScore, computerScore } = localStorageResult;
+  const { playerScore, computerScore, bestOfRounds: localBestOfRounds } = localStorageResult;
 
-  switch (bestOfRounds) {
+  switch (localBestOfRounds) {
     case 3:
       if (playerScore === 2) {
         updateFinalMessage(PLAYER);
@@ -212,4 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initRoundButtons();
   initJankenpoButtons();
+
+  playerStartButton.disabled = true;
 });

@@ -28,12 +28,18 @@ export function updateScore(playerScore, computerScore) {
   computerScoreElement.innerText = updatedComputerScore;
 
   if (isLocalStorageExist()) {
-    const parsedResult = JSON.stringify({
+    const localStorageResult = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const updatedResult = {
       playerScore: updatedPlayerScore,
       computerScore: updatedComputerScore
+    };
+
+    const newResult = JSON.stringify({
+      ...localStorageResult,
+      ...updatedResult
     });
 
-    localStorage.setItem(STORAGE_KEY, parsedResult);
+    localStorage.setItem(STORAGE_KEY, newResult);
   }
 };
 
