@@ -1,4 +1,7 @@
 export const STORAGE_KEY = 'JANKENPO';
+export const PLAYER = 'PLAYER';
+export const COMPUTER = 'COMPUTER';
+export const ID_MESSAGE_RESULT = 'message-result';
 
 export function isLocalStorageExist() {
   if (typeof (Storage) === undefined) {
@@ -52,15 +55,34 @@ export function updateMessage(result, playerChoice, computerChoice) {
   const resultIntro = document.createTextNode(message)
 
   let intro = document.createElement("p");
-  intro.setAttribute("id", "message-result")
+  intro.setAttribute("id", ID_MESSAGE_RESULT)
   intro.appendChild(playerIntro)
   intro.appendChild(computerIntro)
   intro.appendChild(resultIntro)
 
   if (messageElement.childNodes.length > 0) {
-    const element = document.getElementById('message-result')
+    const element = document.getElementById(ID_MESSAGE_RESULT)
     element.remove();
   }
 
   messageElement.appendChild(intro);
+};
+
+export function updateFinalMessage(winner) {
+  let finalMessageElement = document.getElementById('final-message');
+  let finalMessage = '';
+
+  if (winner === PLAYER) {
+    finalMessage = 'YOU WIN!';
+  } else {
+    finalMessage = 'YOU LOSE';
+  }
+
+  const finalMessageTextNode = document.createTextNode(finalMessage);
+
+  let newParagraphElement = document.createElement('p');
+  newParagraphElement.setAttribute('id', 'final-message-result');
+  newParagraphElement.appendChild(finalMessageTextNode);
+
+  finalMessageElement.appendChild(newParagraphElement);
 };
